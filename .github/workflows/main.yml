@@ -1,5 +1,3 @@
-name: Upload Node.js App to Artifactory
-
 on:
   push:
     branches:
@@ -12,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:  
+    steps:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -45,26 +43,20 @@ jobs:
           jfrog rt config --url ${{ secrets.ARTIFACTORY_URL }} --user ${{ secrets.ARTIFACTORY_USER }} --password ${{ secrets.ARTIFACTORY_API_KEY }}
 
       # Upload the package to Artifactory
-      
-      
-
       - name: Upload artifact to Artifactory
         run: |
           curl -u ${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }} \
-          -X PUT "https://mycompany.jfrog.io//artifactory/npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" \
+          -X PUT "https://mycompany.jfrog.io/artifactory/npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" \
           -T nodejs-app-xray-test-1.0.0.tgz
-      
 
-
-      
-    
-
-      # Trigger Xray scan on the uploaded artifact
-      - name: Trigger Xray Scan
+      # Trigger Xray scan on the uploaded artifact using the API
+      - name: Trigger Xray Scan via API
         run: |
-          jfrog rt xray "npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" --debug
+          curl -u ${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }} \
+          -X POST "https://mycompany.jfrog.io/artifactory/api/v1/scan/npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz"
 
-      # Display Xray scan results
+      # Display Xray Scan Results
       - name: Display Xray Scan Results
         run: |
-          jfrog rt xray "npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" --status --details
+          curl -u ${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }} \
+          "https://mycompany.jfrog.io/artifactory/api/v1/scan-results/npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz"
