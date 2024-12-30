@@ -62,7 +62,7 @@ jobs:
       # Trigger Xray scan on the uploaded artifact
       - name: Trigger Xray Scan
         run: |
-          jfrog rt xray "npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz"
+          jfrog rt xray "npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" --debug
 
       # Display Xray scan results
       - name: Display Xray Scan Results
