@@ -45,9 +45,19 @@ jobs:
           jfrog rt config --url ${{ secrets.ARTIFACTORY_URL }} --user ${{ secrets.ARTIFACTORY_USER }} --password ${{ secrets.ARTIFACTORY_API_KEY }}
 
       # Upload the package to Artifactory
-      - name: Upload package to Artifactory
+      
+      
+
+      - name: Upload artifact to Artifactory
         run: |
-          jfrog rt upload "nodejs-app-xray-test-1.0.0.tgz" npm-repo/my-node-app/1.0.0/
+          curl -u ${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }} \
+          -X PUT "https://your-artifactory-url/artifactory/npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" \
+          -T nodejs-app-xray-test-1.0.0.tgz
+      
+
+
+      
+    
 
       # Trigger Xray scan on the uploaded artifact
       - name: Trigger Xray Scan
