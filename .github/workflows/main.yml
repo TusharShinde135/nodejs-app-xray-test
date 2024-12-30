@@ -1,0 +1,60 @@
+name: Upload Node.js App to Artifactory
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          npm install
+
+      # Create the tarball (artifact)
+      - name: Create tarball
+        run: |
+          npm pack
+
+      # Install JFrog CLI
+      - name: Install JFrog CLI
+        run: |
+          curl -fL https://getcli.jfrog.io | sh
+          sudo mv jfrog /usr/local/bin/
+
+      # Configure JFrog CLI with Artifactory credentials
+      - name: JFrog CLI Configuration
+        run: |
+          jfrog rt config --url ${{ secrets.ARTIFACTORY_URL }} --user ${{ secrets.ARTIFACTORY_USER }} --password ${{ secrets.ARTIFACTORY_API_KEY }}
+
+      # Upload the package to Artifactory
+      - name: Upload package to Artifactory
+        run: |
+          jfrog rt upload "nodejs-app-xray-test-1.0.0.tgz" npm-repo/my-node-app/1.0.0/
+
+      # Trigger Xray scan on the uploaded artifact
+      - name: Trigger Xray Scan
+        run: |
+          jfrog rt xray "npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz"
+
+      # Display Xray scan results
+      - name: Display Xray Scan Results
+        run: |
+          jfrog rt xray "npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" --status --details
