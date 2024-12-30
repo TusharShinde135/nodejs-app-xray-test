@@ -51,7 +51,7 @@ jobs:
       - name: Upload artifact to Artifactory
         run: |
           curl -u ${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }} \
-          -X PUT "https://your-artifactory-url/artifactory/npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" \
+          -X PUT "https://mycompany.jfrog.io//artifactory/npm-repo/my-node-app/1.0.0/nodejs-app-xray-test-1.0.0.tgz" \
           -T nodejs-app-xray-test-1.0.0.tgz
       
 
